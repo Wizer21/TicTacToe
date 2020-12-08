@@ -1,51 +1,169 @@
-gameBoard = {}
+listOfRows = []
+aRow = {}
+bRow = {}
+cRow = {}
 
+listOfRows = [aRow, bRow, cRow]
 
 def newGame():
-    gameBoard = {
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0,
-        5: 0,
-        6: 0,
-        7: 0,
-        8: 0,
-        9: 0
-    }
 
+    aRow.clear()
+    bRow.clear()
+    cRow.clear()
 
-def playerPlayed(position):
-    gameBoard[position] = 1
+    aRow[0] = 0
+    aRow[1] = 0
+    aRow[2] = 0
 
-    adjacentKey = getAdjacentKey(position)
-    getLineOfTwo(gameBoard.get(position), position, adjacentKey)
+    bRow[0] = 0
+    bRow[1] = 0
+    bRow[2] = 0
 
+    cRow[0] = 0
+    cRow[1] = 0
+    cRow[2] = 0
 
-def getAdjacentKey(adjacentFrom):
-    bot = adjacentFrom - 4
-    top = adjacentFrom + 4
+# 0 = Case Vide
+# 1 = Case Joueur
+# 3 = Case Ia
 
-    list = [
-        bot, bot + 1, bot + 2, adjacentFrom - 1, adjacentFrom + 1, top - 2, top - 1, top
-    ]
+def iniAlgo(position): #Initialisation
+    position = int(position)
+    # Ajouter la nouvelle case à la liste des valeurs
+    if position <= 2:
+        aRow[position]  = 1
+    elif position <= 5:
+        position -= 3
+        bRow[position]  = 1
+    else:
+        position -= 6
+        cRow[position]  = 1
 
-    for i in len(list):
-        if list[i] = < 1 or 9 >= list[i]:
-            del list[i]
+    winPlays = []
+    counterPlays  = []
+    goodPlays = []
 
-    return list
+    # Regarde les 3 lignes
+    player = 1
+    ia = 2
+    empty = []
 
+    for i in range(len(listOfRows)):
+        pointPlayer = 0
+        pointsIA = 0
+        empty.clear()
+        for idPos in range(len(listOfRows[i])):
+            if listOfRows[i][idPos] == player:
+                pointPlayer += 1
+            if listOfRows[i][idPos] == ia:
+                pointsIA += 1
+            if listOfRows[i][idPos] == 0:
+                empty.append(idPos)
+        if pointPlayer == 3:
+            return 1
+        if pointsIA == 2 and len(empty) == 1:
+            winPlays.append(str(i) + str(empty[0]))
+        if pointPlayer == 2 and len(empty) == 1:
+            counterPlays.append(str(i) + str(empty[0]))
+        if len(empty) == 2 and pointPlayer == 1:
+            goodPlays.append(str(i) + str(empty[0]))
+            goodPlays.append(str(i) + str(empty[1]))
 
-def getLineOfTwo(typeKey, firstPosition, list):
-    for i in len(list):
+    # Regarde les 3 colones
+    columns = {}
+    for idRow in range(len(listOfRows)):
+        pointPlayer = 0
+        pointsIA = 0
+        empty.clear()
 
-        if gameBoard.get(adjacentKey[i]) == typeKey:
-            secondPosition = adjacentKey[i]
-            tridPosition = secondValue + (firstPosition - secondValue)
+        columns.clear()
+        for i in range(3):
+            columns[i] = listOfRows[i][idRow]
 
-            if 0 <= tridPosition or tridPosition >= 9:
-                if gameBoard.get(adjacentKey[tridPosition]) == typeKey
-                    return True
+        for idPos in range(len(columns)):
+            if columns[idPos] == player:
+                pointPlayer += 1
+            if columns[idPos] == ia:
+                pointsIA += 1
+            if columns[idPos] == 0:
+                empty.append(idPos)
+        if pointPlayer == 3:
+            return 1
+        if pointsIA == 2 and len(empty) == 1:
+            winPlays.append(str(idRow) + str(empty[0]))
+        if pointPlayer == 2 and len(empty) == 1:
+            counterPlays.append(str(idRow) + str(empty[0]))
+        if len(empty) == 2 and pointPlayer == 1:
+            goodPlays.append(str(idRow) + str(empty[0]))
+            goodPlays.append(str(idRow) + str(empty[1]))
 
-            tridPosition = secondValue + (firstPosition - secondValue)
+    # verifier Diagonale 1
+    diag = []
+    for y in range(len(listOfRows)):
+        value = listOfRows[y][y]
+        diag.append(value)
+
+    pointPlayer = 0
+    pointsIA = 0
+    empty.clear()
+
+    for idPos in range(len(diag)):
+        if diag[idPos] == player:
+            pointPlayer += 1
+        if diag[idPos] == ia:
+            pointsIA += 1
+        if diag[idPos] == 0:
+            empty.append(str(idPos) + str(idPos))
+    if pointPlayer == 3:
+        return 1
+    if pointsIA == 2 and len(empty) == 1:
+        winPlays.append(empty[0])
+    if pointPlayer == 2 and len(empty) == 1:
+        counterPlays.append(empty[0])
+    if len(empty) == 2 and pointPlayer == 1:
+        goodPlays.append(empty[0])
+        goodPlays.append(empty[1])
+
+    # verifier Diagonale 2
+    diag.clear()
+
+    diag.append(listOfRows[2][0])
+    diag.append(listOfRows[1][1])
+    diag.append(listOfRows[0][2])
+
+    pointPlayer = 0
+    pointsIA = 0
+    empty.clear()
+
+    for idPos in range(len(diag)):
+        if diag[idPos] == player:
+            pointPlayer += 1
+        if diag[idPos] == ia:
+            pointsIA += 1
+        if diag[idPos] == 0:
+            empty.append(str(idPos) + str(idPos))
+    if pointPlayer == 3:
+        return 1
+    if pointsIA == 2 and len(empty) == 1:
+        winPlays.append(empty[0])
+    if pointPlayer == 2 and len(empty) == 1:
+        counterPlays.append(empty[0])
+    if len(empty) == 2 and pointPlayer == 1:
+        goodPlays.append(empty[0])
+        goodPlays.append(empty[1])
+
+    # 0 = continue
+    # 1 = win
+
+    if len(winPlays) > 0:
+        return str(1) + winPlays[0]
+    if len(counterPlays) > 0:
+        return str(0) + counterPlays[0]
+    if len(goodPlays) > 0:
+        return str(0) + goodPlays[0]
+
+    for i in range(len(listOfRows)):
+        for j in listOfRows[i]:
+            if listOfRows[i][j] == 0:
+                return str(0) + str(i) + str(j)
+
