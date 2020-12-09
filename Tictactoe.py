@@ -98,17 +98,18 @@ class Tictactoe(QWidget):
         self.newAtion(iniAlgo(idObject.objectName()))
 
     def newAtion(self, val):
-        print("new Action get " + str(val))
-        #isWin = val[0]
-        #isWin = int(isWin)
+        print("----- IA PLAY ------ " + str(val))
 
-        if int(val[0]) == 1:
-            self.title.setText("SomeOne Won")
+        isWin = int(val[0])
+        if isWin == 1:
+            self.title.setText("You Won")
+            return
+        if isWin == 2:
+            self.title.setText("You Lose")
 
-        val1 = int(val[1])
-        val2 = int(val[2])
 
-        position = val1 * (val2 + 1)
+        newPos = int(val[1]) * 3 + (int(val[2]))
 
-        self.button = self.findChild(QPushButton, str(position))
+        self.button = self.findChild(QPushButton, str(newPos))
         self.button.setText("X")
+        self.button.setEnabled(False)
