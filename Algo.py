@@ -32,6 +32,10 @@ def newGame():
 def iniAlgo(position): #Initialisation
     position = int(position)
     # Ajouter la nouvelle case à la liste des valeurs
+    if position == 9:
+        myPos = str(random.randint(0,2)) + str(random.randint(0,2))
+        return str(0) + str(calculAndAddPosition( myPos ))
+
     addPlayToBoard(position, 1)
 
     winPlays = []
@@ -168,6 +172,8 @@ def iniAlgo(position): #Initialisation
     return str(0) + str(calculAndAddPosition(giveMeTheBest(emptyCases)))
 
 def calculAndAddPosition(position):
+    if position == "null":
+        return position
     newPos = int(position[0]) *3 + int(position[1])
     addPlayToBoard(newPos, 2)
     return position
@@ -178,7 +184,7 @@ def addPlayToBoard(position, whoInt):
     elif position <= 5:
         position -= 3
         bRow[position]  = whoInt
-    else:
+    elif position <= 8:
         position -= 6
         cRow[position]  = whoInt
 
@@ -192,4 +198,19 @@ def giveMeTheBest(listToCheck):
     if len(borders) > 0:
         myReturn = random.choice(borders)
         return myReturn
+
+    if len(listToCheck) == 0:
+        return "null"
+
     return random.choice(listToCheck)
+
+def isGameFinished():
+    emptyCases = []
+    for i in range(len(listOfRows)):
+        for j in listOfRows[i]:
+            if listOfRows[i][j] == 0:
+                emptyCases.append(str(i) + str(j))
+
+
+
+

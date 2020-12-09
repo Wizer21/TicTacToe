@@ -7,11 +7,20 @@ from Algo import*
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
-    app.setFont(app.font().setPointSize(50))
+
+    #Récupération et application du thème
+    myFile = open(".\darktheme.qss", "r")
+    myQss = myFile.read()
+    app.setStyleSheet(myQss)
+    myFile.close()
+
+    app.setApplicationName("TicTacToe")
+    pix = QPixmap(".\tic.png")
+    app.setWindowIcon(QIcon(pix))
 
     widget = Tictactoe()
     widget.build()
-    widget.resize(800, 600)
+    widget.resize(900, 600)
     widget.show()
 
     sys.exit(app.exec_()) 

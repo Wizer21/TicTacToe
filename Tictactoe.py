@@ -1,17 +1,25 @@
 import sys
-from PySide2.QtWidgets import (QLabel, QPushButton,
-                               QVBoxLayout, QHBoxLayout, QGridLayout, QWidget, QSizePolicy)
-from PySide2.QtCore import Slot, Qt
+from PySide2.QtWidgets import *
+from PySide2.QtCore import *
 from PySide2.QtGui import *
 from Algo import *
+import random
 
 class Tictactoe(QWidget):
     def __init__(self):
         QWidget.__init__(self)
+        self.pixCircle = QPixmap(".\circle.png")
+        self.pixCircle = self.pixCircle.scaled(100,100, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        self.pixCross = QPixmap(".\cross.png")
+        self.pixCross = self.pixCross.scaled(100,100, Qt.KeepAspectRatioByExpanding, Qt.SmoothTransformation)
+        self.playerScore = 0
+        self.iaScore = 0
+        self.nullScore = 0
+        self.numberOfTurn = 0
 
     def build(self):
         # Build Main
-        self.mainLayout = QHBoxLayout()
+        self.mainLayout = QGridLayout()
         self.setLayout(self.mainLayout)
 
         # Build Left Panel
@@ -19,13 +27,24 @@ class Tictactoe(QWidget):
 
         self.layoutLeft = QVBoxLayout()
         self.title = QLabel('TicTacToe')
+        self.whoWon = QLabel()
+        self.score = QLabel("Score:")
+        self.playerScoreLabel = QLabel("You: 0")
+        self.iaScoreLabel = QLabel("AI: 0")
+        self.nullScoreLabel = QLabel("Null: 0")
 
-        self.mainLayout.addWidget(self.leftWidget)
+        self.mainLayout.addWidget(self.leftWidget,0,0)
         self.leftWidget.setLayout(self.layoutLeft)
         self.layoutLeft.addWidget(self.title)
+        self.layoutLeft.addWidget(self.whoWon)
+        self.layoutLeft.addWidget(self.score)
+        self.layoutLeft.addWidget(self.playerScoreLabel)
+        self.layoutLeft.addWidget(self.iaScoreLabel)
+        self.layoutLeft.addWidget(self.nullScoreLabel)
 
-        self.layoutLeft.setAlignment(Qt.AlignTop)
-        self.title.setStyleSheet("QLabel {font-size: 60px}")
+        # NEW
+        self.newButton = QPushButton("New")
+        self.mainLayout.addWidget(self.newButton,1,0)
 
         # Build Game Area
         self.widgetGameZone = QWidget()
@@ -41,7 +60,7 @@ class Tictactoe(QWidget):
         self.button7 = QPushButton()
         self.button8 = QPushButton()
 
-        self.mainLayout.addWidget(self.widgetGameZone)
+        self.mainLayout.addWidget(self.widgetGameZone,0,1,2,1)
         self.widgetGameZone.setLayout(self.layoutGameZone)
 
         self.layoutGameZone.addWidget(self.button0, 2, 0)
@@ -84,32 +103,127 @@ class Tictactoe(QWidget):
         self.button7.clicked.connect(self.newPlayerEntry)
         self.button8.clicked.connect(self.newPlayerEntry)
 
+        self.newButton.clicked.connect(self.relaodGame)
+
+        self.buttonList = [self.button0, self.button1, self.button2, self.button3, self.button4, self.button5, self.button6, self.button7, self.button8]
+
         newGame()
+
+        # Stylisation
+        self.layoutLeft.setAlignment(Qt.AlignTop)
+        self.leftWidget.setObjectName("leftborder")
+        self.leftWidget.setContentsMargins(0,0,0,0)
+        self.mainLayout.setSpacing(0)
+        self.setContentsMargins(0,0,0,0)
+        self.title.setObjectName("title")
+        self.score.setObjectName("score")
 
     @Slot()
     def newPlayerEntry(self, myId):
         idObject = self.sender()
         print("You clicked " + idObject.objectName())
 
-        self.button = self.findChild(QPushButton, idObject.objectName())
-        self.button.setText("O")
-        self.button.setEnabled(False)
+        self.newButtonClicked(1, idObject.objectName())
 
         self.newAtion(iniAlgo(idObject.objectName()))
 
+    def newButtonClicked(self, whoInt, nameButton):
+        self.newButton = self.findChild(QPushButton, str(nameButton))
+
+        if whoInt == 1:
+            self.newButton.setIcon(self.pixCircle)
+        if whoInt == 2:
+            self.newButton.setIcon(self.pixCross)
+
+        self.newButton.setIconSize(QSize(120,120))
+        self.newButton.blockSignals(True)
+        self.newButton.setStyleSheet(self.getStyleDeadButton())
+
     def newAtion(self, val):
-        print("----- IA PLAY ------ " + str(val))
+        self.numberOfTurn += 1
 
         isWin = int(val[0])
         if isWin == 1:
-            self.title.setText("You Won")
+            self.whoWon.setText("You Won")
+            self.playerScore += 1
+            self.playerScoreLabel.setText("You: " + str(self.playerScore))
+            self.freezButtons()
             return
         if isWin == 2:
-            self.title.setText("You Lose")
-
+            self.whoWon.setText("You Lose")
+            self.iaScore += 1
+            self.iaScoreLabel.setText("AI: " + str(self.iaScore))
+            self.freezButtons()
+        if val == "0null":
+            self.whoWon.setText("Null")
+            self.nullScore += 1
+            self.nullScoreLabel.setText("Null: " + str(self.nullScore))
+            self.freezButtons()
+            return
+        if self.numberOfTurn == 5:
+            newPos = int(val[1]) * 3 + (int(val[2]))
+            self.newButtonClicked(2, str(newPos))
+            self.whoWon.setText("Null")
+            self.nullScore += 1
+            self.nullScoreLabel.setText("Null: " + str(self.nullScore))
+            self.freezButtons()
+            return
 
         newPos = int(val[1]) * 3 + (int(val[2]))
 
-        self.button = self.findChild(QPushButton, str(newPos))
-        self.button.setText("X")
-        self.button.setEnabled(False)
+        self.newButtonClicked(2, str(newPos))
+
+    def relaodGame(self):
+        for i in self.buttonList:
+            i.blockSignals(False)
+            i.setIcon(QPixmap(""))
+            i.setStyleSheet(self.getStyleNewButton())
+
+        self.whoWon.setText("")
+        self.numberOfTurn = 0
+        newGame()
+        dice = random.randint(0, 1)
+        if dice == 1:
+            self.newAtion(iniAlgo(str(9)))
+
+        myFile = open(".\darktheme.qss", "r")
+        myQss = myFile.read()
+        self.setStyleSheet(myQss)
+        myFile.close()
+
+    def freezButtons(self):
+        for i in self.buttonList:
+            i.blockSignals(True)
+            i.setStyleSheet(self.getStyleDeadButton())
+
+    def getStyleDeadButton(self):
+        return """
+QPushButton {
+  background-color: #091833;
+  padding: 5px;
+  border: 0px solid transparent;
+}
+QPushButton::hover {
+}
+QPushButton::pressed {
+  background-color: #ff2b36;
+  padding: 5px;
+  border: 0px solid transparent;
+}"""
+
+    def getStyleNewButton(self):
+        return """
+        QPushButton {
+  background-color: #091833;
+  padding: 5px;
+  border: 0px solid red;
+}
+QPushButton::hover {
+  border: 1px solid #ff2b36;
+}
+QPushButton::pressed {
+  background-color: #ff2b36;
+  color: #292929;
+  padding: 5px;
+  border: 0px solid transparent;
+}"""
