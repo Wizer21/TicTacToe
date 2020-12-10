@@ -4,6 +4,8 @@ from PySide2.QtCore import *
 from PySide2.QtGui import *
 from Algo import *
 import random
+import pickle
+import json
 
 class Tictactoe(QWidget):
     def __init__(self):
@@ -107,6 +109,8 @@ class Tictactoe(QWidget):
 
         self.buttonList = [self.button0, self.button1, self.button2, self.button3, self.button4, self.button5, self.button6, self.button7, self.button8]
 
+        #self.saveScores()
+        self.loadScores()
         newGame()
 
         # Stylisation
@@ -148,17 +152,20 @@ class Tictactoe(QWidget):
             self.playerScore += 1
             self.playerScoreLabel.setText("You: " + str(self.playerScore))
             self.freezButtons()
+            self.saveScores()
             return
         if isWin == 2:
             self.whoWon.setText("You Lose")
             self.iaScore += 1
             self.iaScoreLabel.setText("AI: " + str(self.iaScore))
             self.freezButtons()
+            self.saveScores()
         if val == "0null":
             self.whoWon.setText("Null")
             self.nullScore += 1
             self.nullScoreLabel.setText("Null: " + str(self.nullScore))
             self.freezButtons()
+            self.saveScores()
             return
         if self.numberOfTurn == 5:
             newPos = int(val[1]) * 3 + (int(val[2]))
@@ -167,6 +174,7 @@ class Tictactoe(QWidget):
             self.nullScore += 1
             self.nullScoreLabel.setText("Null: " + str(self.nullScore))
             self.freezButtons()
+            self.saveScores()
             return
 
         newPos = int(val[1]) * 3 + (int(val[2]))
@@ -195,6 +203,30 @@ class Tictactoe(QWidget):
         for i in self.buttonList:
             i.blockSignals(True)
             i.setStyleSheet(self.getStyleDeadButton())
+
+    def saveScores(self):
+        score = {
+            "null": self.nullScore,
+            "player": self.playerScore,
+            "ia": self.iaScore
+        }
+
+        with open(".\data.json", "w") as dataFile:
+            json.dump(score, dataFile)
+
+    def loadScores(self):
+        score = {}
+        with open(".\data.json", "r") as dataFile:
+            data = json.load(dataFile)
+            score = data
+
+        self.nullScore = score["null"]
+        self.playerScore = score["player"]
+        self.iaScore = score["ia"]
+
+        self.nullScoreLabel.setText("Null: " + str(self.nullScore))
+        self.playerScoreLabel.setText("You: " + str(self.playerScore))
+        self.iaScoreLabel.setText("AI: " + str(self.iaScore))
 
     def getStyleDeadButton(self):
         return """
