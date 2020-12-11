@@ -3,7 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['main.py'],
+a = Analysis(['app.py'],
              pathex=['C:\\Users\\simon\\Desktop\\Prog\\Python\\Python_QT\\TicTacToe'],
              binaries=[],
              datas=[],
@@ -23,7 +23,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='TicTacToe',
+          name='main',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,

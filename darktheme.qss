@@ -35,9 +35,9 @@ QWidget#leftborder {
 }
 QLabel#title {
     font-size: 80px;
-    color: #feff6e;
+    color: #79f1fe;
 }
 QLabel#score {
     font-size: 40px;
-    color: #feff6e;
+    color: #79f1fe;
 }

@@ -111,7 +111,7 @@ class Tictactoe(QWidget):
 
         #self.saveScores()
         self.loadScores()
-        newGame()
+        self.relaodGame()
 
         # Stylisation
         self.layoutLeft.setAlignment(Qt.AlignTop)
@@ -133,6 +133,8 @@ class Tictactoe(QWidget):
 
     def newButtonClicked(self, whoInt, nameButton):
         self.newButton = self.findChild(QPushButton, str(nameButton))
+        self.newButton.setCursor(Qt.ArrowCursor)
+
 
         if whoInt == 1:
             self.newButton.setIcon(self.pixCircle)
@@ -186,6 +188,7 @@ class Tictactoe(QWidget):
             i.blockSignals(False)
             i.setIcon(QPixmap(""))
             i.setStyleSheet(self.getStyleNewButton())
+            i.setCursor(Qt.PointingHandCursor)
 
         self.whoWon.setText("")
         self.numberOfTurn = 0
