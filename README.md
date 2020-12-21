@@ -2,7 +2,7 @@
 
 This TicTacToe allows you to play against the program that analyzes the board to find the best way to deafeat you.
 
-# Algorythm 
+# Algorithm 
 After every round, the programm will analyze the board using the following method
 
 ## Look at every row, column and diagonal
